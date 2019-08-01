@@ -3,12 +3,19 @@
 ## Description
 The project idea that I had in mind was creating a graph out of something all Make School students
 are familiar with, NPM! More specifically, I want to create a graph and tree out of the dependencies
-inside of the node modules folder that comes with every node project you create. This will allow for
-all sorts of cool things like...
+inside of the node modules folder.
 
-1. Creating a dependency tree to display the hierarchy of modules and then evaluating them.
-2. Creating a dependency graph to show which modules rely on the same vertices (packages) and then
-evaluating the resulting graph.
+## Project model
+Inside the npm graph, each package would be a vertex and the edges between vertices would serve as
+what packages the current package depends on.
+
+## Problems I would like to solve:
+1. Figuring out which package is depended on the most through whichever vertex has the highest amount
+of neighbors.
+2. Proving that dependency graphs are acyclic, meaning that there are no cliques which would create
+circular dependency issues.
+3. Finding out the diameter of the top level package to the absolute bottom most package(s) (packages that
+have no dependencies) to find the longest dependency chain/ longest load time for packages.
 3. Creating a general tool that would allow for anyone to run my script and create a graph out
 of their node projects node modules!
 
