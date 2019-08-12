@@ -12,23 +12,37 @@ def traverse_npm_folder(root_path):
     seen_verts = set()
     edges = []
     real_root = root_path.split("/")[-1]
-    vertices = [Vertex(real_root)]
+    vertices = {real_root: Vertex(real_root)}
     print(real_root)
 
-    for dir_name, subdir_list, _ in os.walk("./" + root_path + "/node_modules/"):
+    for dir_name, subdir_list, _ in os.walk(
+        "./" + root_path + "/node_modules/", topdown=True
+    ):
+        node_module = dir_name.split("/")[-2]
         for subdir in subdir_list:
-            if subdir not in seen_verts and subdir != "node_modules":
-                vertices.append(Vertex(subdir))
+            if subdir not in seen_verts and node_module == "node_modules":
+
+                vertices[subdir] = Vertex(subdir)
                 short_dir_name = os.path.basename(dir_name)
-                edges.append(
-                    (short_dir_name if short_dir_name else real_root, subdir, 1)
-                )
+                if short_dir_name == "deep":
+                    print(dir_name)
+                    print(node_module)
+                    print(short_dir_name)
+                    print(subdir)
+
+                if subdir == "deep":
+                    print("yeet")
+                    print(subdir)
+
+                if short_dir_name in vertices:
+                    edges.append(
+                        (short_dir_name if short_dir_name else real_root, subdir, 1)
+                    )
                 seen_verts.add(subdir)
 
-    print(vertices)
     for edge in edges:
         print(edge)
-    return vertices, edges
+    return vertices.values(), edges
 
 
 def process_args():
@@ -57,7 +71,7 @@ def main(args: argparse.Namespace):
     if not args.folder:
         raise ValueError("There was no npm folder path specified!")
 
-    vertices, edges = traverse_npm_folder(args.folder)
+    vertices, edges = traverse_npm_folder(args.folder.rstrip("/"))
     graph = Digraph()
     # Obtain the graph properties and then fill out the graph.
     fill_graph(graph, vertices, edges)
