@@ -361,7 +361,7 @@ class Graph:
 
         return True
 
-    def dfs_longest(self, vertex, dp, visited):
+    def dfs_longest(self, vertex, memo, visited):
 
         print(vertex)
         # Mark as visited
@@ -372,16 +372,16 @@ class Graph:
 
             # If not visited
             if not neighbor not in visited:
-                self.dfs_longest(neighbor, dp, visited)
+                self.dfs_longest(neighbor, memo, visited)
 
             # Store the max of the paths
-            dp[vertex] = max(dp[vertex], 1 + dp[neighbor])
+            memo[vertex] = max(memo[vertex], 1 + memo[neighbor])
 
     # Function that returns the longest path
     def find_longest_path(self):
 
         # Dp array
-        dp = defaultdict(lambda: 0)
+        memo = defaultdict(lambda: 0)
 
         # Visited array to know if the node
         # has been visited previously or not
@@ -390,14 +390,14 @@ class Graph:
         # Call DFS for every unvisited vertex
         for vert_key, vertex in self.graph.items():
             if vertex not in visited:
-                self.dfs_longest(vertex, dp, visited)
+                self.dfs_longest(vertex, memo, visited)
 
         ans = 0
 
         # Traverse and find the maximum of all dp[i]
-        for key in dp.keys():
-            print(key, ans)
-            ans = max(ans, dp[key])
+        for key in memo.keys():
+            print(key, ans, memo[key])
+            ans = max(ans, memo[key])
 
         return ans
 

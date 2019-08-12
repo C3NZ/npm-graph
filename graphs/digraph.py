@@ -27,8 +27,6 @@ class Digraph(Graph):
 
         # Error handling before trying to add an edge
         if from_vert not in self.graph or to_vert not in self.graph:
-            print(from_vert in self.graph)
-            print(to_vert)
 
             raise ValueError("One of the verticies is not currently in the graph.")
         if from_vert == to_vert:

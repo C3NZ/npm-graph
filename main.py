@@ -13,32 +13,21 @@ def traverse_npm_folder(root_path):
     edges = []
     real_root = root_path.split("/")[-1]
     vertices = {real_root: Vertex(real_root)}
-    print(real_root)
 
-    for dir_name, subdir_list, _ in os.walk(
-        "./" + root_path + "/node_modules/", topdown=True
-    ):
+    for dir_name, subdir_list, _ in os.walk("./" + root_path + "/node_modules/"):
         node_module = dir_name.split("/")[-2]
         for subdir in subdir_list:
             if node_module == "node_modules":
-
                 vertices[subdir] = Vertex(subdir)
                 short_dir_name = os.path.basename(dir_name)
+
                 if short_dir_name == "":
                     short_dir_name = real_root
 
                 if short_dir_name in vertices and short_dir_name != subdir:
-                    print(short_dir_name)
-                    print(real_root)
-                    edges.append(
-                        (subdir, short_dir_name if short_dir_name else real_root, 1)
-                    )
+                    edges.append((subdir, short_dir_name, 1))
                 seen_verts.add(subdir)
 
-    for edge in edges:
-        print(edge)
-
-    print(len(edges))
     return vertices.values(), edges
 
 
@@ -73,16 +62,16 @@ def main(args: argparse.Namespace):
     # Obtain the graph properties and then fill out the graph.
     fill_graph(graph, vertices, edges)
 
-    is_eulerian = graph.is_eulerian_cycle()
-    print(graph)
-
     hist = dict()
+    root = args.folder.rstrip("/").split("/")[-1]
+    print(root)
     for key, vertex in graph.graph.items():
         for neighbor, _ in vertex.neighbors:
-            if neighbor.key in hist:
-                hist[neighbor.key] += 1
-            else:
-                hist[neighbor.key] = 1
+            if neighbor.key != root:
+                if neighbor.key in hist:
+                    hist[neighbor.key] += 1
+                else:
+                    hist[neighbor.key] = 1
 
     highest = 0
     dependency = ""
@@ -93,9 +82,10 @@ def main(args: argparse.Namespace):
 
     print(dependency)
     print(highest)
-    print(graph.find_longest_path())
-    print(args.folder)
-    print(graph.prove_acyclic(args.folder.strip("/").split("/")[-1]))
+    # print(graph.find_longest_path())
+    # print(graph.prove_acyclic(args.folder.strip("/").split("/")[-1]))
+
+    print(graph.verticies)
 
 
 if __name__ == "__main__":
