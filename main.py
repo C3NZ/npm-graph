@@ -2,16 +2,28 @@ import argparse
 # Import the os module, for the os.walk function
 import os
 
+from graphs.digraph import Digraph
 from graphs.graph import fill_graph
 from graphs.utils.file_reader import read_graph_file
+from graphs.vertex import Vertex
 
-# Set the directory you want to start from
-for dirName, subdirList, fileList in os.walk(rootDir):
-    print('Found directory: %s' % dirName)
-    for fname in fileList:
-        print('\t%s' % fname)
 
 def traverse_npm_folder(root_path):
+    seen_verts = set()
+    vertices = [Vertex(root_path)]
+    edges = []
+
+    for dir_name, subdir_list, _ in os.walk("./" + root_path + "/node_modules/"):
+        for subdir in subdir_list:
+            if subdir not in seen_verts:
+                vertices.append(Vertex(subdir))
+                short_dir_name = os.path.basename(dir_name)
+                edges.append(
+                    (short_dir_name if short_dir_name else root_path, subdir, 1)
+                )
+                seen_verts.add(subdir)
+
+    return vertices, edges
 
 
 def process_args():
@@ -40,13 +52,14 @@ def main(args: argparse.Namespace):
     if not args.folder:
         raise ValueError("There was no npm folder path specified!")
 
-    traverse_npm_folder(args.folder)
+    vertices, edges = traverse_npm_folder(args.folder)
+    graph = Digraph()
     # Obtain the graph properties and then fill out the graph.
-    graph, vertex, edges = read_graph_file(args.filename)
-    fill_graph(graph, vertex, edges)
+    fill_graph(graph, vertices, edges)
 
     is_eulerian = graph.is_eulerian_cycle()
     print(f"This graph is Eulerian: {is_eulerian}")
+    print(graph)
 
 
 if __name__ == "__main__":
