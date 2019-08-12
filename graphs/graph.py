@@ -363,7 +363,6 @@ class Graph:
 
     def dfs_longest(self, vertex, memo, visited):
 
-        print(vertex)
         # Mark as visited
         visited.add(vertex)
 
@@ -394,12 +393,14 @@ class Graph:
 
         ans = 0
 
+        package = ""
         # Traverse and find the maximum of all dp[i]
         for key in memo.keys():
-            print(key, ans, memo[key])
-            ans = max(ans, memo[key])
+            if memo[key] > ans:
+                ans = memo[key]
+                package = key
 
-        return ans
+        return ans, package
 
     def prove_acyclic(self, root):
         stack = []

@@ -14,19 +14,23 @@ def traverse_npm_folder(root_path):
     real_root = root_path.split("/")[-1]
     vertices = {real_root: Vertex(real_root)}
 
-    for dir_name, subdir_list, _ in os.walk("./" + root_path + "/node_modules/"):
-        node_module = dir_name.split("/")[-2]
+    for dir_name, subdir_list, _ in os.walk("./" + root_path + "/node_modules"):
+        pkg, node_module = dir_name.split("/")[-2], dir_name.split("/")[-1]
+        print(dir_name)
+        print(subdir_list)
+        print(node_module)
         for subdir in subdir_list:
-            if node_module == "node_modules":
+            if node_module == "node_modules" and subdir != ".bin":
                 vertices[subdir] = Vertex(subdir)
-                short_dir_name = os.path.basename(dir_name)
+                short_dir_name = os.path.basename(pkg)
+                print(short_dir_name)
 
                 if short_dir_name == "":
                     short_dir_name = real_root
 
                 if short_dir_name in vertices and short_dir_name != subdir:
+                    print(subdir)
                     edges.append((subdir, short_dir_name, 1))
-                seen_verts.add(subdir)
 
     return vertices.values(), edges
 
@@ -65,27 +69,16 @@ def main(args: argparse.Namespace):
     hist = dict()
     root = args.folder.rstrip("/").split("/")[-1]
     print(root)
-    for key, vertex in graph.graph.items():
-        for neighbor, _ in vertex.neighbors:
-            if neighbor.key != root:
-                if neighbor.key in hist:
-                    hist[neighbor.key] += 1
-                else:
-                    hist[neighbor.key] = 1
-
     highest = 0
     dependency = ""
-    for key, value in hist.items():
-        if value > highest:
+    for key, vertex in graph.graph.items():
+        if len(vertex.neighbors) > highest:
+            highest = len(vertex.neighbors)
             dependency = key
-            highest = value
 
-    print(dependency)
-    print(highest)
-    # print(graph.find_longest_path())
-    # print(graph.prove_acyclic(args.folder.strip("/").split("/")[-1]))
-
-    print(graph.verticies)
+    print(dependency, highest)
+    print(graph.find_longest_path())
+    print(graph.prove_acyclic(args.folder.strip("/").split("/")[-1]))
 
 
 if __name__ == "__main__":
