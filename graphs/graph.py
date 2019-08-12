@@ -1,7 +1,7 @@
 """
     Module that implements an undirected graph class
 """
-from collections import deque
+from collections import defaultdict, deque
 from queue import PriorityQueue
 
 from graphs.vertex import Vertex
@@ -358,6 +358,68 @@ class Graph:
             neighbors = vertex.neighbors
             if len(neighbors) % 2 != 0 or not neighbors:
                 return False
+
+        return True
+
+    def dfs_longest(self, vertex, dp, visited):
+
+        print(vertex)
+        # Mark as visited
+        visited.add(vertex)
+
+        # Traverse for all its children
+        for neighbor, _ in vertex.neighbors:
+
+            # If not visited
+            if not neighbor not in visited:
+                self.dfs_longest(neighbor, dp, visited)
+
+            # Store the max of the paths
+            dp[vertex] = max(dp[vertex], 1 + dp[neighbor])
+
+    # Function that returns the longest path
+    def find_longest_path(self):
+
+        # Dp array
+        dp = defaultdict(lambda: 0)
+
+        # Visited array to know if the node
+        # has been visited previously or not
+        visited = set()
+
+        # Call DFS for every unvisited vertex
+        for vert_key, vertex in self.graph.items():
+            if vertex not in visited:
+                self.dfs_longest(vertex, dp, visited)
+
+        ans = 0
+
+        # Traverse and find the maximum of all dp[i]
+        for key in dp.keys():
+            print(key, ans)
+            ans = max(ans, dp[key])
+
+        return ans
+
+    def prove_acyclic(self, root):
+        stack = []
+        stack.append(self.graph[root])
+
+        visited = set()
+        while stack:
+            vert = stack.pop()
+
+            if vert in visited:
+                break
+
+            visited.add(vert)
+
+            for neighbor, _ in vert.neighbors:
+                if neighbor in stack:
+                    return False
+
+                if neighbor not in visited:
+                    stack.append(neighbor)
 
         return True
 

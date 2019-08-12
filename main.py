@@ -27,11 +27,7 @@ def traverse_npm_folder(root_path):
                 if short_dir_name == "":
                     short_dir_name = real_root
 
-                if (
-                    short_dir_name in vertices
-                    and short_dir_name != subdir
-                    and short_dir_name != real_root
-                ):
+                if short_dir_name in vertices and short_dir_name != subdir:
                     print(short_dir_name)
                     print(real_root)
                     edges.append(
@@ -78,7 +74,6 @@ def main(args: argparse.Namespace):
     fill_graph(graph, vertices, edges)
 
     is_eulerian = graph.is_eulerian_cycle()
-    print(f"This graph is Eulerian: {is_eulerian}")
     print(graph)
 
     hist = dict()
@@ -98,6 +93,9 @@ def main(args: argparse.Namespace):
 
     print(dependency)
     print(highest)
+    print(graph.find_longest_path())
+    print(args.folder)
+    print(graph.prove_acyclic(args.folder.strip("/").split("/")[-1]))
 
 
 if __name__ == "__main__":
