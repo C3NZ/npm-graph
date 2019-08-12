@@ -16,20 +16,15 @@ def traverse_npm_folder(root_path):
 
     for dir_name, subdir_list, _ in os.walk("./" + root_path + "/node_modules"):
         pkg, node_module = dir_name.split("/")[-2], dir_name.split("/")[-1]
-        print(dir_name)
-        print(subdir_list)
-        print(node_module)
         for subdir in subdir_list:
             if node_module == "node_modules" and subdir != ".bin":
                 vertices[subdir] = Vertex(subdir)
                 short_dir_name = os.path.basename(pkg)
-                print(short_dir_name)
 
                 if short_dir_name == "":
                     short_dir_name = real_root
 
                 if short_dir_name in vertices and short_dir_name != subdir:
-                    print(subdir)
                     edges.append((subdir, short_dir_name, 1))
 
     return vertices.values(), edges
@@ -68,7 +63,8 @@ def main(args: argparse.Namespace):
 
     hist = dict()
     root = args.folder.rstrip("/").split("/")[-1]
-    print(root)
+    print("#### START EVALUATION ####\n")
+    print(f"\tExamining the directory: {root}")
     highest = 0
     dependency = ""
     for key, vertex in graph.graph.items():
@@ -76,9 +72,14 @@ def main(args: argparse.Namespace):
             highest = len(vertex.neighbors)
             dependency = key
 
-    print(dependency, highest)
-    print(graph.find_longest_path())
-    print(graph.prove_acyclic(args.folder.strip("/").split("/")[-1]))
+    print(f"\tMost depended on package: {dependency} with {highest} dependants")
+    path_len, package = graph.find_longest_path()
+    print(
+        f"\tThe longest shortest path was: {path_len} edges and to the package: {package}"
+    )
+    is_acyclic = graph.prove_acyclic(args.folder.strip("/").split("/")[-1])
+    print(f"\tThe graph is acyclic: {is_acyclic}")
+    print("\n#### END EVALUATION ####")
 
 
 if __name__ == "__main__":
