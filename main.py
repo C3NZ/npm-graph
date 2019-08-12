@@ -10,19 +10,24 @@ from graphs.vertex import Vertex
 
 def traverse_npm_folder(root_path):
     seen_verts = set()
-    vertices = [Vertex(root_path)]
     edges = []
+    real_root = root_path.split("/")[-1]
+    vertices = [Vertex(real_root)]
+    print(real_root)
 
     for dir_name, subdir_list, _ in os.walk("./" + root_path + "/node_modules/"):
         for subdir in subdir_list:
-            if subdir not in seen_verts:
+            if subdir not in seen_verts and subdir != "node_modules":
                 vertices.append(Vertex(subdir))
                 short_dir_name = os.path.basename(dir_name)
                 edges.append(
-                    (short_dir_name if short_dir_name else root_path, subdir, 1)
+                    (short_dir_name if short_dir_name else real_root, subdir, 1)
                 )
                 seen_verts.add(subdir)
 
+    print(vertices)
+    for edge in edges:
+        print(edge)
     return vertices, edges
 
 
