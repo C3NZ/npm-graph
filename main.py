@@ -20,28 +20,29 @@ def traverse_npm_folder(root_path):
     ):
         node_module = dir_name.split("/")[-2]
         for subdir in subdir_list:
-            if subdir not in seen_verts and node_module == "node_modules":
+            if node_module == "node_modules":
 
                 vertices[subdir] = Vertex(subdir)
                 short_dir_name = os.path.basename(dir_name)
-                if short_dir_name == "deep":
-                    print(dir_name)
-                    print(node_module)
+                if short_dir_name == "":
+                    short_dir_name = real_root
+
+                if (
+                    short_dir_name in vertices
+                    and short_dir_name != subdir
+                    and short_dir_name != real_root
+                ):
                     print(short_dir_name)
-                    print(subdir)
-
-                if subdir == "deep":
-                    print("yeet")
-                    print(subdir)
-
-                if short_dir_name in vertices:
+                    print(real_root)
                     edges.append(
-                        (short_dir_name if short_dir_name else real_root, subdir, 1)
+                        (subdir, short_dir_name if short_dir_name else real_root, 1)
                     )
                 seen_verts.add(subdir)
 
     for edge in edges:
         print(edge)
+
+    print(len(edges))
     return vertices.values(), edges
 
 
@@ -79,6 +80,24 @@ def main(args: argparse.Namespace):
     is_eulerian = graph.is_eulerian_cycle()
     print(f"This graph is Eulerian: {is_eulerian}")
     print(graph)
+
+    hist = dict()
+    for key, vertex in graph.graph.items():
+        for neighbor, _ in vertex.neighbors:
+            if neighbor.key in hist:
+                hist[neighbor.key] += 1
+            else:
+                hist[neighbor.key] = 1
+
+    highest = 0
+    dependency = ""
+    for key, value in hist.items():
+        if value > highest:
+            dependency = key
+            highest = value
+
+    print(dependency)
+    print(highest)
 
 
 if __name__ == "__main__":
